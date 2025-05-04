@@ -1,0 +1,54 @@
+version: "3"
+
+services:
+  app:
+    container_name: ${DOCKER_COMPOSE_NAME}.app
+    build:
+      context: ..
+      dockerfile: _docker/Dockerfile
+      args:
+        APP_PORT: ${APP_PORT}
+        ENV: ${APP_ENV}
+    volumes:
+      - ../:/usr/src/app
+    working_dir: /usr/src/app
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    depends_on:
+      redis: { condition: service_healthy }
+      postgres: { condition: service_healthy }
+    networks:
+      backend:
+
+  redis:
+    container_name: ${DOCKER_COMPOSE_NAME}.redis
+    image: "redis:8.0-rc1" # Image page: <https://hub.docker.com/_/redis>
+    restart: unless-stopped
+    healthcheck: # Healthcheck docs: <https://docs.docker.com/engine/reference/builder/#healthcheck>
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      backend:
+
+  postgres:
+    container_name: ${DOCKER_COMPOSE_NAME}.db
+    image: "postgres:14.17" # Image page: <https://hub.docker.com/_/postgres>
+    restart: unless-stopped
+    env_file:
+      - .env
+    healthcheck: # Healthcheck docs: <https://docs.docker.com/engine/reference/builder/#healthcheck>
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      backend:
+
+
+networks:
+  backend:

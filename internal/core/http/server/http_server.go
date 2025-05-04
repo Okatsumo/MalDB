@@ -3,6 +3,7 @@ package server
 import (
 	"MalDB/internal/core/app"
 	"MalDB/internal/core/http/middleware"
+	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -33,7 +34,7 @@ func Run(app *app.App) {
 	RegisterRouter(router)
 
 	server := &http.Server{
-		Addr:           app.Cfg.URL,
+		Addr:           fmt.Sprintf("0.0.0.0:%d", app.Cfg.Port),
 		Handler:        router,
 		ReadTimeout:    20 * time.Second,
 		WriteTimeout:   20 * time.Second,
