@@ -19,19 +19,22 @@ func Run(app *app.App) {
 	router := gin.New()
 	router.Use(gin.Recovery())
 
-	//RateLimiter
+	//Rate limiter
 	clientLimiter := middleware.NewClientLimiter(app.Cfg.HttpRateLimit, app.Cfg.HttpRateLimitBurst)
 	router.Use(middleware.RateLimitMiddleware(clientLimiter))
+
+	// Request logger
+	router.Use(middleware.RequestLogger())
 
 	router.Use(cors.New(cors.Config{
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
-		AllowAllOrigins:  true,
+		AllowOrigins:     []string{app.Cfg.URL},
 		MaxAge:           12 * time.Hour,
 	}))
-	RegisterRouter(router)
+	RegisterRouter(router, *app)
 
 	server := &http.Server{
 		Addr:           fmt.Sprintf("0.0.0.0:%d", app.Cfg.Port),
