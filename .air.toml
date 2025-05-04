@@ -2,7 +2,8 @@ root = "."
 tmp_dir = "/tmp/airbuild"
 
 [build]
-cmd = "go build -o /tmp/airbuild/main ./cmd"
+cmd = "go build -buildvcs=false -o /tmp/airbuild/main ./cmd"
 bin = "/tmp/airbuild/main"
 include_ext = ["go"]
 exclude_dir = ["/tmp", "vendor"]
+poll = true
