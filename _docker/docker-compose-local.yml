@@ -39,6 +39,8 @@ services:
     container_name: ${DOCKER_COMPOSE_NAME}.db
     image: "postgres:14.17" # Image page: <https://hub.docker.com/_/postgres>
     restart: unless-stopped
+    ports:
+      - "5432:5432"
     env_file:
       - .env
     healthcheck: # Healthcheck docs: <https://docs.docker.com/engine/reference/builder/#healthcheck>

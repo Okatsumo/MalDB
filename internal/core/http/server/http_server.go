@@ -12,7 +12,7 @@ import (
 )
 
 func Run(app *app.App) {
-	if !app.Cfg.Debug {
+	if !app.Config().Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
@@ -20,7 +20,7 @@ func Run(app *app.App) {
 	router.Use(gin.Recovery())
 
 	//Rate limiter
-	clientLimiter := middleware.NewClientLimiter(app.Cfg.HttpRateLimit, app.Cfg.HttpRateLimitBurst)
+	clientLimiter := middleware.NewClientLimiter(app.Config().HttpRateLimit, app.Config().HttpRateLimitBurst)
 	router.Use(middleware.RateLimitMiddleware(clientLimiter))
 
 	// Request logger
@@ -31,13 +31,13 @@ func Run(app *app.App) {
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
-		AllowOrigins:     []string{app.Cfg.URL},
+		AllowOrigins:     []string{app.Config().URL},
 		MaxAge:           12 * time.Hour,
 	}))
-	RegisterRouter(router, *app)
+	RegisterRouter(router, app.Config())
 
 	server := &http.Server{
-		Addr:           fmt.Sprintf("0.0.0.0:%d", app.Cfg.Port),
+		Addr:           fmt.Sprintf("0.0.0.0:%d", app.Config().Port),
 		Handler:        router,
 		ReadTimeout:    20 * time.Second,
 		WriteTimeout:   20 * time.Second,

@@ -12,6 +12,14 @@ type Config struct {
 	Debug              bool   `env:"APP_DEBUG"`
 	HttpRateLimit      int    `env:"HTTP_RATE_LIMIT"`
 	HttpRateLimitBurst int    `env:"HTTP_RATE_LIMIT_BURST"`
+	DbHost             string `env:"POSTGRES_HOST"`
+	DbPort             int    `env:"POSTGRES_PORT"`
+	DbUser             string `env:"POSTGRES_USER"`
+	DbPassword         string `env:"POSTGRES_PASSWORD"`
+	DB                 string `env:"POSTGRES_DB"`
+	RedisHost          string `env:"REDIS_HOST"`
+	RedisPort          int    `env:"REDIS_PORT"`
+	RedisPassword      string `env:"REDIS_PASSWORD"`
 }
 
 // Load get env configs
